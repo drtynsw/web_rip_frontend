@@ -1,47 +1,64 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import type { FC } from 'react'
-import { Col, Row, Spinner } from 'react-bootstrap'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import type { AttackVector } from '../modules/types'
-import { getAttackVectors } from '../modules/attackVectorsApi'
+import { Alert, Badge, Col, Row, Spinner } from 'react-bootstrap'
+import { useNavigate } from 'react-router-dom'
 import { AttackVectorCard } from '../components/AttackVectorCard'
 import { YearFilter } from '../components/YearFilter'
 import { ROUTES } from '../Routes'
+import { useAppDispatch, useAppSelector } from '../store/hooks'
+import {
+  deleteAttackVector, getAttackVectorsList, resetFilter, setFilterDate, toggleLike,
+} from '../store/attackVectorsSlice'
+import type { AttackVector } from '../modules/types'
 
 export const TilesPage: FC = () => {
-  const [searchParams, setSearchParams] = useSearchParams()
-  const appliedDate = searchParams.get('date') ?? ''
-  const [date, setDate] = useState(appliedDate)               // значение в поле календаря
-  const [vectors, setVectors] = useState<AttackVector[]>([])  // карточки
-  const [loading, setLoading] = useState(false)
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const { filterDate, list, loading, isMock, pendingIds, error } = useAppSelector((state) => state.attackVectors)
+  const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated)
 
   useEffect(() => {
-    const year = appliedDate ? Number(appliedDate.slice(0, 4)) : undefined
-    setLoading(true)
-    getAttackVectors(year)
-      .then(setVectors)
-      .finally(() => setLoading(false))
-  }, [appliedDate])
+    dispatch(getAttackVectorsList())
+  }, [dispatch, isAuthenticated])
 
-  const handleSearch = () => setSearchParams(date ? { date } : {})
+  const handleSearch = () => dispatch(getAttackVectorsList())
   const handleReset = () => {
-    setDate('')
-    setSearchParams({})
+    dispatch(resetFilter())
+    dispatch(getAttackVectorsList())
+  }
+  const handleDelete = (v: AttackVector) => {
+    if (window.confirm(`Удалить «${v.title}»?`)) dispatch(deleteAttackVector(v.id))
   }
 
   return (
     <div className="tiles-page">
-      <h1>Векторы атак</h1>
-      <YearFilter value={date} onChange={setDate} onSearch={handleSearch} onReset={handleReset} loading={loading} />
+      <h1>
+        Векторы атак
+        {isMock && <Badge bg="secondary" className="mock-badge">демо-данные</Badge>}
+      </h1>
+      <YearFilter
+        value={filterDate}
+        onChange={(value) => dispatch(setFilterDate(value))}
+        onSearch={handleSearch}
+        onReset={handleReset}
+        loading={loading}
+      />
 
+      {error && <Alert variant="danger" className="py-2">{error}</Alert>}
       {loading && <div className="loader"><Spinner animation="border" variant="primary" /></div>}
-      {!loading && !vectors.length && <p className="tiles-empty">Ничего не найдено на выбранный год.</p>}
-      {!loading && !!vectors.length && (
+      {!loading && !error && !list.length && <p className="tiles-empty">Ничего не найдено на выбранный год.</p>}
+      {!loading && !!list.length && (
         <Row xs={2} className="g-2">
-          {vectors.map((v) => (
+          {list.map((v) => (
             <Col key={v.id}>
-              <AttackVectorCard vector={v} onClick={(id) => navigate(`${ROUTES.FEED}/${id}`)} />
+              <AttackVectorCard
+                vector={v}
+                onClick={(id) => navigate(`${ROUTES.FEED}/${id}`)}
+                canAct={isAuthenticated && !isMock}
+                pending={pendingIds.includes(v.id)}
+                onLike={(vector) => dispatch(toggleLike(vector))}
+                onDelete={handleDelete}
+              />
             </Col>
           ))}
         </Row>

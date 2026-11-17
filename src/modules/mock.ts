@@ -38,3 +38,13 @@ export const ATTACK_VECTORS_MOCK: AttackVector[] = [
     severity: 10, discovered_year: 2010, likes_count: 0, is_liked: 0, is_mine: 0,
   },
 ]
+
+export const listFromMock = (year?: number): AttackVector[] =>
+  ATTACK_VECTORS_MOCK.filter((v) => !year || v.discovered_year === year)
+
+export function feedFromMock(id?: number, next = false): AttackVector | null {
+  const list = [...ATTACK_VECTORS_MOCK].sort((a, b) => a.id - b.id)
+  if (!id) return list[0] ?? null
+  if (next) return list.find((v) => v.id > id) ?? null
+  return list.find((v) => v.id === id) ?? null
+}

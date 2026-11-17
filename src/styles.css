@@ -115,3 +115,34 @@ body {
 .next-btn { border-radius: 50% !important; width: 42px; height: 42px; padding: 0 !important; font-size: 20px !important; line-height: 1 !important; }
 .feed-last { margin-top: 8px; font-size: 12px; color: var(--color-text-muted); text-align: center; }
 .feed-empty { display: flex; align-items: center; justify-content: center; height: 100%; color: var(--color-text-muted); padding: 20px; text-align: center; }
+
+.tabbar button.tabbar-item { background: none; border: none; border-left: 1px solid var(--color-border); }
+.tabbar .tab-user { display: block; font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100px; margin: 0 auto; }
+.mock-badge { font-size: 10px; font-weight: 400; margin-left: 8px; vertical-align: middle; }
+
+.tile-actions { display: flex; align-items: center; justify-content: space-between; gap: 4px; min-height: 26px; }
+.like-btn {
+  background: none; border: none; padding: 0;
+  font-size: 12px; color: var(--color-text-muted);
+  display: flex; align-items: center; gap: 4px; cursor: pointer;
+}
+.like-btn:disabled { opacity: 0.5; cursor: wait; }
+.like-btn.liked { color: var(--color-text); }
+.like-badge.like-btn { flex-direction: column; color: var(--color-text); font-size: 11px; gap: 0; }
+.delete-btn { font-size: 10.5px !important; padding: 1px 6px !important; }
+.feed-error { font-size: 12px; margin-bottom: 8px; }
+
+.form-page { padding: 16px; }
+.form-page h1 { font-size: 18px; margin: 0 0 12px; font-weight: 700; }
+.form-page .form-label { font-size: 13px; color: var(--color-text-muted); margin-bottom: 4px; }
+.form-page .form-control {
+  background: var(--color-card-bg);
+  border-color: var(--color-border);
+  color: var(--color-text);
+  color-scheme: dark;
+}
+.form-step { font-size: 12px; color: var(--color-text-muted); margin: -6px 0 12px; }
+.draft-preview { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; background: var(--color-card-bg); border: 1px solid var(--color-border); border-radius: 10px; padding: 8px; }
+.draft-preview img { width: 64px; height: 64px; object-fit: cover; border-radius: 6px; }
+.draft-label { font-size: 11px; color: var(--color-text-muted); }
+.draft-title { font-size: 14px; font-weight: 600; }
